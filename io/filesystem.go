@@ -11,6 +11,8 @@ import (
 	"os"
 	"path/filepath"
 	"regexp"
+
+	"github.com/devops-kung-fu/go-util/str"
 )
 
 type fileSystem interface {
@@ -65,7 +67,7 @@ func DownloadFile(fs fileSystem, url string) (string, error) {
 	if response.StatusCode != 200 {
 		return "", errors.New("Received non 200 response code")
 	}
-	thisUUID := getUUID()
+	thisUUID := str.GetUUID()
 	fileName := fmt.Sprintf("/tmp/%s.zip", thisUUID)
 	file, err := fs.Create(fileName)
 	if err != nil {

@@ -1,7 +1,7 @@
-package io
+package str
 
 import "github.com/google/uuid"
 
-func getUUID() string {
+func GetUUID() string {
 	return uuid.NewString()
 }
