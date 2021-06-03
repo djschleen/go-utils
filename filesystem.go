@@ -11,6 +11,7 @@ import (
 	"os"
 	"path/filepath"
 	"regexp"
+	"strings"
 )
 
 type fileSystem interface {
@@ -54,6 +55,14 @@ func (mockFS) Stat(name string) (os.FileInfo, error)                          { 
 func (mockFS) Walk(root string, walkFn filepath.WalkFunc) error               { return nil }
 func (mockFS) ReadFile(filename string) ([]byte, error)                       { return []byte(`Test String`), nil }
 func (mockFS) WriteFile(filename string, data []byte, perm os.FileMode) error { return nil }
+
+func sanitizeExtractPath(filePath string, destination string) error {
+	destpath := filepath.Join(destination, filePath)
+	if !strings.HasPrefix(destpath, destination) {
+		return fmt.Errorf("%s: illegal file path", filePath)
+	}
+	return nil
+}
 
 // DownloadFile - Download a file from a URL
 func DownloadFile(fs fileSystem, url string) (string, error) {
@@ -111,6 +120,10 @@ func UnZip(source string, destination string) error {
 		}
 		// otherwise, remove that directory (_not_ including parents)
 		err = os.Remove(path)
+		if err != nil {
+			return err
+		}
+		err = sanitizeExtractPath(file.Name, destination)
 		if err != nil {
 			return err
 		}
